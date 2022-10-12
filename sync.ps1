@@ -1,7 +1,7 @@
 # Script will sync $source_folder into $target_folder and delete non relevant files. 
 # If $target_folder doesn't exist it will be created. 
 
-param ($source_folder, $target_folder, $log_file = "sync.log")
+param ($source_folder, $target_folder, $cleanup_target = "TRUE", $log_file = "sync.log")
 
 function Write-Log {
     Param ([string]$log_string, [string]$log_level = "INFO")
@@ -76,7 +76,7 @@ foreach ($difference in $differences) {
             Copy-Item -Path $source_object_path -Destination $target_object_path
         }        
     }
-    elseif ($difference.SideIndicator -eq "=>") {
+    elseif (($difference.SideIndicator -eq "=>") -and $cleanup_target -eq "TRUE") {
         $target_object_path = $difference.InputObject.FullName
         $source_object_path = $target_object_path.Replace($target_folder, $source_folder)
         if (!(Test-Path -Path $source_object_path) -and (Test-Path -Path $target_object_path)) {
